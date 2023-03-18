@@ -43,22 +43,35 @@ train_path = 'E:\data\pokemon_classify_png_1_aug'
 #                 if i>=limit:
 #                     break
 
+file1 = open('obj_names.txt', 'r')
+Lines = file1.readlines()
+  
+# Strips the newline character
+myl=[]
+for line in Lines:
+    string = line.strip().replace("\t","")
+    for i in range(10):
+        string = string.replace(str(i),'')
+    myl.append(string)
+
+
 for folder in os.listdir(train_path):
+    print(folder)
     train_new_path = os.path.join(train_path,folder)
     images = os.listdir(train_new_path)
 #     split = 100
     images = images[:100]
-    for img in images:
+    for img in tqdm(images):
         src = os.path.join(train_new_path,img)
-        d = os.path.join('E:\data\pkm_c_aug',folder)
+        d = os.path.join('E:\data\pkm_c_aug_new',myl[int(folder)])
         des = os.path.join(d,img)
         shutil.move(src,des)
 
 count = []
 
-lis = os.listdir('E:\data\pkm_c_aug')
+lis = os.listdir('E:\data\pkm_c_aug_new')
 
 for folder in lis:
-    p = os.path.join('E:\data\pkm_c_aug',folder)
+    p = os.path.join('E:\data\pkm_c_aug_new',folder)
     count.append(len(os.listdir(p)))
     print(str(folder) + ' count is :'+str(len(os.listdir(p))))

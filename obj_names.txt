@@ -80,7 +80,7 @@
 080	Slowbro	
 081	Magnemite	
 082	Magneton	
-083	Farfetch'd	
+083	Farfetchd	
 084	Doduo	
 085	Dodrio	
 086	Seel	
