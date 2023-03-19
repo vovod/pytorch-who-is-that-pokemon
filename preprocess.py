@@ -6,13 +6,13 @@ from transform import data_transforms
 
 
 # dataset_dir = "E:/data/pokemon_classify_png"
-dataset_dir = "E:/data/pkm_c_aug_new"
+dataset_dir = ""
 
 # out_dir = "F:/pro_ai/pkm_classify/"+'logs/pkm/effnetv2s/'+ str(date.today())
-out_dir = "F:/pro_ai/pkm_c_t/"+'logs/pkm/effnetv2s/'+ str(date.today())
+# out_dir = "F:/pro_ai/pkm_c_t/"+'logs/pkm/effnetv2s/'+ str(date.today())
 
-log_dir = out_dir + '/log.txt'
-os.makedirs(out_dir, exist_ok=True)
+# log_dir = out_dir + '/log.txt'
+# os.makedirs(out_dir, exist_ok=True)
 
 bsz = 8
 

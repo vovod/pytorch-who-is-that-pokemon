@@ -1,107 +1,84 @@
+import os
 import torch
-import copy
 import time
-import torch.optim as optim
-from torch.optim import lr_scheduler
 import torch.nn as nn
 from tqdm import tqdm
 from torchvision import models
-from datetime import date
-from preprocess import train_dataloader, val_dataloader, out_dir
+from preprocess import train_dataloader, val_dataloader
 
 device = 'cuda'
+os.makedirs('weights/')
+load_dict = "weights/"
 
 TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 
-model_ft = models.efficientnet_v2_s(num_classes = TRAIN_MODE.get("pkm_t"))
+model_ft = models.resnet18(num_classes = TRAIN_MODE.get("pkm")).to(device)
+# model_ft = models.efficientnet_v2_s(num_classes = TRAIN_MODE.get("pkm")).to(device)
 
-model_ft.classifier = nn.Sequential(
-        nn.Dropout(p=0.5, inplace=True),
-        nn.Linear(1280, TRAIN_MODE.get("pkm_t")),
-    )
+# model_ft.classifier = nn.Sequential(
+#         nn.Dropout(p=0.5, inplace=True),
+#         nn.Linear(1280, TRAIN_MODE.get("pkm")),
+#     ).to(device)
 
-model_ft = model_ft.to(device)
+# model_ft.load_state_dict(torch.load(""))
 
-EPOCH = 30
+losses = []
+accuracies = []
+epoches = 100
 
-def train_model(trn_dataloader, val_dataloader, workspace_dir, model, criterion, optimizer, scheduler, num_epochs=EPOCH):
-    model = model.to(device)
-    since = time.time()
+start = time.time()
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model_ft.parameters(), lr=0.01)
+# conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
 
-    best_model_wts = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
-    with open(workspace_dir+"/log.txt", "a") as f:
-        f.write(str(date.today())+"\n")
-        print(str(date.today()))
-        f.write("Start Training\n")
-        print("Start Training")
-    for epoch in range(num_epochs):
-        with open(workspace_dir+"/log.txt", "a") as f:
-            f.write(f'Epoch {epoch}/{num_epochs - 1}------------------------------------\n')
-        print(f'Epoch {epoch}/{num_epochs - 1}------------------------------------\n')
+# print(device)
 
-        for phase in ['train', 'val']:
-            if phase == 'train':
-                model.train() 
-                dataloader = trn_dataloader
-            else:
-                model.eval()   
-                dataloader = val_dataloader
+for epoch in range(epoches):
+    epoch_loss = 0
+    epoch_accuracy = 0
 
-            running_loss = 0.0
-            running_corrects = 0
+    for X, y in tqdm(train_dataloader):
+        X = X.to(device)
+        y = y.to(device)
+        preds = model_ft(X).to(device)
+        loss = loss_fn(preds, y)
 
-            for inputs, labels in tqdm(dataloader):
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-                optimizer.zero_grad()
+        accuracy = ((preds.argmax(dim=1)==y).float().mean())
+        epoch_accuracy+=accuracy
+        epoch_loss+=loss
 
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs.to(device))
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
+        # print('.', end='', flush=True)
+    
+    epoch_accuracy = epoch_accuracy/len(train_dataloader)
+    accuracies.append(epoch_accuracy)
+    epoch_loss = epoch_loss/len(train_dataloader)
+    losses.append(epoch_loss)
 
-                    # backward + optimize only if in training phase
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
+    print("\n --- Epoch: {}, train loss: {:.4f}, train acc: {:.4f}, time: {}".format(epoch, epoch_loss, epoch_accuracy, time.time() - start))
 
-                # statistics
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
-            if phase == 'train':
-                scheduler.step()
+    with torch.no_grad():
+        test_epoch_loss = 0
+        test_epoch_accuracy = 0
 
-            epoch_loss = running_loss / len(dataloader)
-            epoch_acc = running_corrects.double() / len(dataloader)
+        for test_X, test_y in tqdm(val_dataloader):
+            test_X = test_X.to(device)
+            test_y = test_y.to(device)
 
-            print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
-            with open(workspace_dir+"/log.txt", "a") as f:
-                f.write(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}\n')
+            test_preds = model_ft(test_X).to(device)
+            test_loss = loss_fn(test_preds, test_y)
 
-            # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(best_model_wts, workspace_dir+"/best.pth")
-                with open(workspace_dir+"/log.txt", "a") as f:
-                    f.write('Save model at epoch: ' + str(epoch) + '\n')
-                print('Save model at epoch: ' + str(epoch) + '\n')
-        print()
+            test_epoch_loss += test_loss
+            test_accuracy = ((test_preds.argmax(dim=1)==test_y).float().mean())
 
-    time_elapsed = time.time() - since
-    print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
-    print(f'Best val Acc: {best_acc:4f}')
+            test_epoch_accuracy += test_accuracy
 
-    # load best model weights
-    model.load_state_dict(best_model_wts)
-    torch.save(model.state_dict(), workspace_dir+"/best.pth")
-    return model
-criterion = nn.CrossEntropyLoss()
+        test_epoch_accuracy = test_epoch_accuracy/len(val_dataloader)
+        test_epoch_loss = test_epoch_loss / len(val_dataloader)
 
-optimizer_ft = optim.AdamW(model_ft.parameters(), lr=0.001, weight_decay=0.000001)
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
-
-model_ft = train_model(train_dataloader, val_dataloader, out_dir, model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                        num_epochs=EPOCH)
+        print("Epoch: {}, test loss: {:.4f}, test acc: {:.4f}, time: {}\n".format(epoch, test_epoch_loss, test_epoch_accuracy, time.time() - start))
+        torch.save(model_ft.state_dict(), os.path.join(
+            load_dict, "Epoch{}Acc{:.4f}.pth".format(epoch+1, test_epoch_accuracy)))

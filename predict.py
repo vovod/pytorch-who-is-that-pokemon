@@ -12,13 +12,15 @@ from transform import data_transforms
 
 device = 'cuda'
 
-#load_model
-path="F:\pro_ai\dog-cat-classify - Copy\Epoch19Acc0.6157.pth"
+#Load model
+path="weights/Acc0.6157.pth"
 TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 model =  models.resnet18(num_classes=151).to(device)
 model.load_state_dict(torch.load(path))
+model.eval()
 
-#read_obj_names
+
+#Read obj_names
 file1 = open('obj_names.txt', 'r')
 Lines = file1.readlines()
 myl=[]
@@ -30,20 +32,18 @@ for line in Lines:
 myl.sort()
 # print(myl)
 
-#load_data
+#Load data
 batch_size = 8
-dataset_dir = "E:\data\pokemon_classify_png_1"
+dataset_dir = "E:\data\pkm_classify_png"
 testset = datasets.ImageFolder(root=dataset_dir, transform=data_transforms)
 test_load = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
-
-
 images, labels = next(iter(test_load))
-
-
 images = images.to(device)
+
+#Predict
 outputs = model(images)
-outputs = nn.Sigmoid()(outputs)
 _, predicted = torch.max(outputs, 1)
+
 
 # Show results
 for i in range(batch_size):
@@ -53,13 +53,11 @@ for i in range(batch_size):
     npimg = img.cpu().numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.axis('off')
-    # Add the image's label
     color = "green"
     label = myl[predicted[i]]
     if myl[labels[i]] != myl[predicted[i]]:
         color = "red"
         label = "(" + label + ")"
     plt.title(label, color=color)
-
 plt.suptitle('Objects Found by Model', size=20)
 plt.show()

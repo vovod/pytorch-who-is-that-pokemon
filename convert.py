@@ -1,8 +1,8 @@
 from PIL import Image 
 import os 
 from tqdm import tqdm
-path = 'E:/data/pokemon_classify_png_1_aug/'
-new_path = "E:/data/pkm_classify_png/"
+path = ""
+new_path = ""
 
 file1 = open('obj_names.txt', 'r')
 Lines = file1.readlines()

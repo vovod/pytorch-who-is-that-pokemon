@@ -1,7 +1,4 @@
-from PIL import Image
-import torchvision
 from torchvision import transforms
-from torch.utils.data import Dataset
 
 data_transforms = transforms.Compose([
     transforms.Resize((240, 240)),
