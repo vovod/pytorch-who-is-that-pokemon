@@ -4,49 +4,62 @@ from PIL import Image
 import torch.nn as nn
 from torchvision import transforms
 import os
+import matplotlib.pyplot as plt
+import numpy as np
+from torchvision import datasets
+from transform import data_transforms
 
-path="F:\pro_ai\dog-cat-classify - Copy\Epoch20Acc0.6914.pth"
-TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 
 device = 'cuda'
 
+#load_model
+path="F:\pro_ai\dog-cat-classify - Copy\Epoch19Acc0.6157.pth"
+TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 model =  models.resnet18(num_classes=151).to(device)
-
 model.load_state_dict(torch.load(path))
-source = 100
-img_path = "E:\\data\\pkm_c_aug\\" + str(source)
 
-data_transforms = transforms.Compose([
-    transforms.Resize((240, 240)),
-    transforms.ToTensor(),
-    transforms.Normalize([0.485, 0.456, 0.406],
-                        [0.229, 0.224, 0.225])
-])
-
-
-path = "E:\\data\\pokemon_classify\\"
-
+#read_obj_names
 file1 = open('obj_names.txt', 'r')
 Lines = file1.readlines()
-  
-# Strips the newline character
 myl=[]
 for line in Lines:
     string = line.strip().replace("\t","")
     for i in range(10):
         string = string.replace(str(i),'')
     myl.append(string)
+myl.sort()
+# print(myl)
 
-for file in os.listdir(img_path): 
-    img = Image.open("{}/{}".format(img_path, file))
-    transform = data_transforms
-    input = transform(img).to(device)
-    test1 = input.unsqueeze(0)
-    model.eval()
+#load_data
+batch_size = 8
+dataset_dir = "E:\data\pokemon_classify_png_1"
+testset = datasets.ImageFolder(root=dataset_dir, transform=data_transforms)
+test_load = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
 
-    output = model(test1)
 
-    prob = nn.Sigmoid()(output)
-    _,pred = output.max(1)
+images, labels = next(iter(test_load))
 
-    print(file + " class: " + myl[source] + " predict: " + myl[pred[0]])
+
+images = images.to(device)
+outputs = model(images)
+outputs = nn.Sigmoid()(outputs)
+_, predicted = torch.max(outputs, 1)
+
+# Show results
+for i in range(batch_size):
+    plt.subplot(2, int(batch_size/2), i + 1)
+    img = images[i]
+    img = img / 2 + 0.5
+    npimg = img.cpu().numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.axis('off')
+    # Add the image's label
+    color = "green"
+    label = myl[predicted[i]]
+    if myl[labels[i]] != myl[predicted[i]]:
+        color = "red"
+        label = "(" + label + ")"
+    plt.title(label, color=color)
+
+plt.suptitle('Objects Found by Model', size=20)
+plt.show()

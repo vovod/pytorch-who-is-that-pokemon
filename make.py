@@ -14,5 +14,5 @@ for line in Lines:
 
 
 for i in tqdm(range(151)):
-    path = "E:\\data\\pkm_c_aug_new\\" + myl[i]
+    path = "E:\\data\\pkm_classify_png\\" + myl[i]
     os.mkdir(path)
