@@ -1,2 +1,8 @@
-# pytorch-pokemon-gen1-classify
-All 151 classes pokemon Gen1 classification with torchvision model.
+# FIND WHO'S THAT POKEMON WITH PYTORCH
+#### All 151 classes pokemon Generation 1 classification with torchvision model.  
+
+## Demo:
+This is the result that my model predicted:
+  
+<img src="https://i.postimg.cc/wj8mhmbk/Figure-1.png" alt="test" style="width:330px;height:300px;"><img src="https://i.postimg.cc/QNppMSMq/Figure-2.png" alt="test1" style="width:330px;height:300px;"><img src="https://i.postimg.cc/W4g47WCW/Figure-3.png" alt="test2" style="width:330px;height:300px;">
+
