@@ -4,5 +4,5 @@
 ## Demo:
 This is the result that my model predicted:
   
-<img src="https://i.postimg.cc/wj8mhmbk/Figure-1.png" alt="test" style="width:330px;height:300px;"><img src="https://i.postimg.cc/QNppMSMq/Figure-2.png" alt="test1" style="width:330px;height:300px;"><img src="https://i.postimg.cc/W4g47WCW/Figure-3.png" alt="test2" style="width:330px;height:300px;">
+<img src="https://i.postimg.cc/wj8mhmbk/Figure-1.png" alt="test" style="width:220px;height:200px;"><img src="https://i.postimg.cc/QNppMSMq/Figure-2.png" alt="test1" style="width:220px;height:200px;"><img src="https://i.postimg.cc/W4g47WCW/Figure-3.png" alt="test2" style="width:220px;height:200px;">
 
