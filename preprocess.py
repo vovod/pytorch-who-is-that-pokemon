@@ -6,7 +6,7 @@ from transform import data_transforms
 
 
 # dataset_dir = "E:/data/pokemon_classify_png"
-dataset_dir = ""
+dataset_dir = "E:/data/pkm_c_aug_new"
 
 # out_dir = "F:/pro_ai/pkm_classify/"+'logs/pkm/effnetv2s/'+ str(date.today())
 # out_dir = "F:/pro_ai/pkm_c_t/"+'logs/pkm/effnetv2s/'+ str(date.today())

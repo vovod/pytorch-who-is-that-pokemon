@@ -13,7 +13,7 @@ from transform import data_transforms
 device = 'cuda'
 
 #Load model
-path="weights/Acc0.6157.pth"
+path="weights/Res18-Acc0.6927.pth"
 TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 model =  models.resnet18(num_classes=151).to(device)
 model.load_state_dict(torch.load(path))
