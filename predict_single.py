@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 from transform import data_transforms
 from PIL import Image
 import matplotlib.image as mpimg
+import os
 
 device = 'cuda'
 
 #Load model
-path="weights/Acc0.6157.pth"
+path="weights/Res18-Acc0.6927.pth"
 TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 model =  models.resnet18(num_classes=151).to(device)
 model.load_state_dict(torch.load(path))
@@ -27,19 +28,22 @@ myl.sort()
 # print(myl)
 
 #Load image
-img = Image.open("predict/test.png")
-img_s = mpimg.imread("predict/test.png")
-img = data_transforms(img).to(device)
-img = img.unsqueeze(0)
+files = "predict"
+for file in os.listdir(files):
+    test_img = files + "/" + file
+    img = Image.open(test_img)
+    img_s = mpimg.imread(test_img)
+    img = data_transforms(img).to(device)
+    img = img.unsqueeze(0)
 
-#Predict
-output = model(img)
-_, predicted = torch.max(output, 1)
-# print(myl[predicted])
+    #Predict
+    output = model(img)
+    _, predicted = torch.max(output, 1)
+    # print(myl[predicted])
 
-#Show results
-plt.imshow(img_s)
-plt.axis('off')
-label = myl[predicted]
-plt.suptitle('That pokemon is: {}'.format(label), size=20)
-plt.show()
+    #Show results
+    plt.imshow(img_s)
+    plt.axis('off')
+    label = myl[predicted]
+    plt.suptitle('Model found that pokemon is: {}'.format(label), size=20)
+    plt.show()

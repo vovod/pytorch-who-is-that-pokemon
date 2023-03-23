@@ -12,13 +12,13 @@ load_dict = "weights/"
 
 TRAIN_MODE = {"pkm": 151, "pkm_t":3}
 
-model_ft = models.resnet18(num_classes = TRAIN_MODE.get("pkm")).to(device)
-# model_ft = models.efficientnet_v2_s(num_classes = TRAIN_MODE.get("pkm")).to(device)
+# model_ft = models.resnet18(num_classes = TRAIN_MODE.get("pkm")).to(device)
+model_ft = models.efficientnet_v2_s(num_classes = TRAIN_MODE.get("pkm")).to(device)
 
-# model_ft.classifier = nn.Sequential(
-#         nn.Dropout(p=0.5, inplace=True),
-#         nn.Linear(1280, TRAIN_MODE.get("pkm")),
-#     ).to(device)
+model_ft.classifier = nn.Sequential(
+        nn.Dropout(p=0.5, inplace=True),
+        nn.Linear(1280, TRAIN_MODE.get("pkm")),
+    ).to(device)
 
 # model_ft.load_state_dict(torch.load(""))
 
