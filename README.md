@@ -32,8 +32,9 @@ Here is my dataset after augmentations: [KAGGLE: Pokemon gen1 images classificat
 
 ## Training:  
 I used [resnet18](https://pytorch.org/vision/main/_modules/torchvision/models/resnet.html#resnet18) model from `torchvision.models` for training on [KAGGLE](https://www.kaggle.com/).  
-If I have time, I will upgrade an [EfficientNetV2](https://pytorch.org/vision/main/models/efficientnetv2.html#model-builders) version.  
-#### The best accuracy of resnet18 model is about 0.62.  
+I have upgraded an [EfficientNetV2](https://pytorch.org/vision/main/models/efficientnetv2.html#model-builders) version.  
+#### The best accuracy of resnet18 model is about 68,8%.  
+#### The best accuracy of efficientnetv2 model is about 69,3%. 
 
 ## Predicting:
 #### `predict.py` to predict val_data.  
