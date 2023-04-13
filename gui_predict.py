@@ -33,22 +33,6 @@ top.title('POKEMON Classification')
 top.configure(background='#CDCDCD')
 label = Label(top,background='#CDCDCD', font=('arial',15,'bold'))
 sign_image = Label(top)
-
-def classify(file_path):
-    img = Image.open(file_path)
-    img = data_transforms(img).to(device)
-    img = img.unsqueeze(0)
-    #Predict
-    output = model(img)
-    _, predicted = torch.max(output, 1)
-    sign = "Model predict that pokemon is: " + myl[predicted]
-    print(sign)
-    label.configure(foreground='#011638', text=sign) 
-    
-def show_classify_button(file_path):
-    classify_b=Button(top,text="Classify Image", command=lambda: classify(file_path), padx=10,pady=5)
-    classify_b.configure(background='#364156', foreground='white', font=('arial',10,'bold'))
-    classify_b.place(relx=0.79,rely=0.46)
     
 def upload_image():
     try:
@@ -59,7 +43,16 @@ def upload_image():
         sign_image.configure(image=im)
         sign_image.image=im
         label.configure(text='')
-        show_classify_button(file_path)
+        img = Image.open(file_path)
+        img = data_transforms(img).to(device)
+        img = img.unsqueeze(0)
+        #Predict
+        output = model(img)
+        _, predicted = torch.max(output, 1)
+        sign = "Model predict that pokemon is: " + myl[predicted]
+        print(sign)
+        label.configure(foreground='#011638', text=sign) 
+        # show_classify_button(file_path)
     except:
         pass
 upload = Button(top,text="Upload an image",command=upload_image,padx=10,pady=5)
