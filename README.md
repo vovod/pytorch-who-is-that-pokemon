@@ -1,7 +1,7 @@
 # FIND WHO'S THAT POKEMON WITH PYTORCH
 #### All 151 classes of pokemon Generation 1 classification with torch-vision model.  
 
-### ***Update [13/04/2023](gui_predict.py): Add `gui_predict` for easy predictions!*
+### *** *Update [13/04/2023](gui_predict.py): Add `gui_predict` for easy predictions!* ***
 
 <img src="GUI.png" alt="test" style="width:750px;height:550px;">
 
